@@ -50,11 +50,16 @@
     return new Worker(workerURL)
   }
 
-  var ourCode = ['<div style="padding:10px;border:1px solid #ccc;resize:none" width="405" height="170">',
-    '<input type="file" id="__ed2kFileSelection" accept=".mkv, .mp4, .avi" multiple style="height:40px" /><br />',
-    '<button id="__ed2kReset" name="reset_files" disabled="true">Reset</button>',
-    '<button id="__ed2kProcess" name="process_files" disabled="true">Process</button><br />',
-    '<div id="__ed2kFileStatus"></div><hr />',
+  var ourCode = ['<style>input[type="file"]{height:25px;}',
+    'input[type="file"]::-webkit-file-upload-button{height:25px;} </style>',
+    '<div style="background-color: #eee;padding:0px;text-align:left;resize:none;width:405px;height:170px">',
+    '<div style="background-color: #333; width:405px; height:75px">',
+    '<div style="vertical-align:middle;font-family:Tahoma,Geneva,sans-serif;color:red">unofficial<span style="font-size:30px;color:white">MVGroup Hasher</span>',
+    '</div></div>',
+    '<input type="file" id="__ed2kFileSelection" disabled="true" accept=".mkv, .mp4, .avi" style="width:33%;color:transparent" multiple />',
+    '<button id="__ed2kReset" name="reset_files" disabled="true" style="width:33%;height:25px">Reset</button>',
+    '<button id="__ed2kProcess" name="process_files" disabled="true" style="width:33%;height:25px">Process</button><br />',
+    '<div id="__ed2kFileStatus" style="padding-left:2px">Script has not executed.</div><br />',
     '<progress id="__ed2kProgressFile" style="width:100%"></progress><br />',
     '<progress id="__ed2kProgressFiles" style="width:100%"></progress>',
     '</div>',
@@ -71,7 +76,7 @@
   var select_status = document.getElementById('__ed2kFileStatus');
   var select_pfile = document.getElementById('__ed2kProgressFile');
   var select_pfiles = document.getElementById('__ed2kProgressFiles');
-  
+
   // bulk of unmodified example code
   var ed2k_progress = function (_file, _current_file, _total_files) {
     select_pfile.value = _current_file;
@@ -156,4 +161,5 @@
   btnFileSelect.addEventListener('change', handleFileSelect, false);
   btnReset.addEventListener('click', resetEverything, false);
   btnProcess.addEventListener('click', startProcessingFiles, false);
+  btnFileSelect.disabled = false;
 })()
