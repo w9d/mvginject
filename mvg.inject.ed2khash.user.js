@@ -157,7 +157,7 @@
     if (progressbar) {
       select_pfile.value = 0;
       select_pfiles.value = 0;
-      select_status.textContent = '';
+      select_status.textContent = 'No files selected.';
     }
   }
 
@@ -165,4 +165,5 @@
   btnReset.addEventListener('click', resetEverything, false);
   btnProcess.addEventListener('click', startProcessingFiles, false);
   btnFileSelect.disabled = false;
+  select_status.textContent = 'No files selected.';
 })()
