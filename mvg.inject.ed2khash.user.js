@@ -111,6 +111,9 @@
       files.push(f);
     }
 
+    if (files.length === 0)
+      return
+
     select_status.textContent = (files.reduce(add,0)/1000000000).toPrecision(3)+
         'GB for ' + files.length + ' ' + ((files.length==1)&&'file'||'files');
     btnReset.disabled = false;
