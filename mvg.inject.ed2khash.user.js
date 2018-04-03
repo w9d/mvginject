@@ -103,16 +103,31 @@
   ed2khasher.setworker(getWorker())
 
   function handleFileSelect(evt) {
-    var _files = evt.target.files;
-    var add = function(a,b){return a+b.size};
+    var new_files = evt.target.files;
+    var add = function(a, b) { return a + b.size };
+    var dupfile = function(input_file, arr) {
+      var input_name = input_file.name;
+      for (var i = 0, f = null; f = arr[i]; i++) {
+        console.log('testing input=' + input_name + ' against ' + f.name)
+        if (input_name === f.name) {
+          return true
+        }
+      }
+      return false
+    }
 
     if (onlysinglefile)
       files = []
 
-    for (var i = 0, f; f = _files[i]; i++) {
+    for (var i = 0, f; f = new_files[i]; i++) {
       if (!f.name.match('\.(mkv|mp4|avi)$')) {
         window.alert('We only accept the MP4, MKV and AVI multimedia containers.' +
           '\n\nYour selection "' + f.name + '" was ignored.');
+        continue;
+      }
+      if (dupfile(f, files)) {
+        window.alert('Err... you cannot insert the same file multiple times.' +
+          '\n\nRemoved "' + f.name + '"');
         continue;
       }
       files.push(f);
