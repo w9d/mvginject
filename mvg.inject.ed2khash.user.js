@@ -11,7 +11,6 @@
 // @downloadURL https://raw.githubusercontent.com/w9d/mvginject/master/mvg.inject.ed2khash.user.js
 // @resource worker https://raw.githubusercontent.com/w9d/ed2khash/833e80c484833982517b4c7b1f0e77ceeb677e96/build/md4-worker.min.js#sha256=d0330e838f487c4338d1b114f78e58045c36cbac0d1bfff6fa601e35be44eaee
 // @require https://raw.githubusercontent.com/w9d/ed2khash/833e80c484833982517b4c7b1f0e77ceeb677e96/build/ed2khash.min.js#sha256=6e1230f73f04112d50a4082744a84ccc725e89ad8ea7c93673461852180ca353
-// @require https://raw.githubusercontent.com/emn178/js-sha256/189bb9b03782b80e59516dfbea78f16b5d9754ce/build/sha256.min.js#sha256=7157511697db744d384a5a2a8646af23f3c90560abf93bb240fdd690b29a898a
 // ==/UserScript==
 
 (function () {
@@ -24,21 +23,8 @@
     return
   }
 
-  var applet_shas = [
-    '1af653111df5dde8bfed0f1da6c677232970aa1342fa956b353799962a07a33b',/*docuwiki/postbot*/
-    '37139811907c2425441b20340bf8d982bc2784aa9c6739f73ae848cca79b096f' /*mvg/releasedb*/
-  ]
-  var applet_sha = sha256(applet.innerHTML)
-
   if (typeof ed2khash !== 'function') {
     mvglog('we wanted to inject but we\'re missing ed2khash', true)
-    return
-  }
-  if (applet_shas.indexOf(applet_sha) === -1) {
-    mvglog('we wanted to inject but the target element has changed', true)
-    mvglog('theApplet contents="' + applet.innerHTML + '"')
-    mvglog('theApplet sha256=' + applet_sha)
-    window.alert(failstr)
     return
   }
 
