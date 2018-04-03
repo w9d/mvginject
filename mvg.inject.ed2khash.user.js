@@ -2,7 +2,7 @@
 // @name Unofficial MVGroup HTML5 eD2k hasher injector
 // @description Inject ed2khash interface over Java Applet.
 // @namespace mvg.inject.ed2khash
-// @version 3
+// @version 4
 // @match *://docuwiki.net/postbot/
 // @match *://forums.mvgroup.org/releasedb/
 // @grant GM_getResourceText
