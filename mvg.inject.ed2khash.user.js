@@ -28,17 +28,15 @@
     '37139811907c2425441b20340bf8d982bc2784aa9c6739f73ae848cca79b096f' /*mvg/releasedb*/
   ]
   var applet_sha = sha256(applet.innerHTML)
-  var failstr = ''
 
-  if (typeof ed2khash !== 'function')
-    failstr += 'mvg-inject: we wanted to inject but we\'re missing ed2khash\n'
-  if (applet_shas.indexOf(applet_sha) === -1)
-    failstr += 'mvg-inject: we wanted to inject but the target element has changed\n'
-
-  if (failstr !== '') {
-    console.error(failstr)
-    console.log('theApplet contents="' + applet.innerHTML + '"')
-    console.log('theApplet sha256=' + applet_sha)
+  if (typeof ed2khash !== 'function') {
+    mvglog('we wanted to inject but we\'re missing ed2khash', true)
+    return
+  }
+  if (applet_shas.indexOf(applet_sha) === -1) {
+    mvglog('we wanted to inject but the target element has changed', true)
+    mvglog('theApplet contents="' + applet.innerHTML + '"')
+    mvglog('theApplet sha256=' + applet_sha)
     window.alert(failstr)
     return
   }
