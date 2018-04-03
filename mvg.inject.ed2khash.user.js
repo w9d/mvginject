@@ -53,10 +53,11 @@
     '<span style="color:red;font-weight:bold;font-size:0.7em;position:relative;top:5px">unofficial</span><br />',
     '<span style="font-size:2em;color:white;position:relative;top:5px">MVGroup<span style="color:#55d300">Hasher</span></span>',
     '</div>',
-    '<button id="__ed2kFileSelection" disabled="true" style="width:32%;height:25px">Open</button>',
-    '<button id="__ed2kReset" disabled="true" style="width:33%;height:25px">Reset</button>',
-    '<button id="__ed2kProcess" disabled="true" style="width:33%;height:25px">Process</button><br />',
-    '<div id="__ed2kFileStatus" style="padding-left:2px">Script has not executed.</div><br />',
+    '<button id="__ed2kFileSelection" disabled="true" style="margin:0;width:33.3%;height:25px">Open</button>',
+    '<button id="__ed2kProcess" disabled="true" style="margin:0;width:33.3%;height:25px">Process</button>',
+    '<button id="__ed2kSave" disabled="true" style="margin:0;width:33.3%;height:25px">Save (soon)</button>',
+    '<button id="__ed2kReset" disabled="true" style="margin:0;width:33.3%;height:25px;float:right">Reset</button>',
+    '<div id="__ed2kFileStatus" style="padding:5px;clear:left">Script has not executed.</div>',
     '<progress id="__ed2kProgressFile" style="width:100%"></progress><br />',
     '<progress id="__ed2kProgressFiles" style="width:100%"></progress>',
     '</div>'
@@ -73,6 +74,7 @@
 
   var files = [];
   var btnReset = document.getElementById('__ed2kReset');
+  var btnSave = document.getElementById('__ed2kSave');
   var btnProcess = document.getElementById('__ed2kProcess');
   var btnFileSelectReal = document.getElementById('__ed2kFileSelectionReal');
   var btnFileSelect = document.getElementById('__ed2kFileSelection');
@@ -92,10 +94,7 @@
   var ed2khasher = ed2khash();
   ed2khasher.onprogress = ed2k_progress;
   ed2khasher.onfilecomplete = ed2k_file_done;
-  ed2khasher.onallcomplete = function () {
-    nolongerprocess(false, false)
-    filesEnd() // mvg change
-  };
+  ed2khasher.onallcomplete = finishProcessingFiles;
   ed2khasher.onerror = function (e) { window.alert('ed2khash error: ' + e.message) }
   ed2khasher.setworker(getWorker())
 
@@ -105,7 +104,6 @@
     var dupfile = function(input_file, arr) {
       var input_name = input_file.name;
       for (var i = 0, f = null; f = arr[i]; i++) {
-        console.log('testing input=' + input_name + ' against ' + f.name)
         if (input_name === f.name) {
           return true
         }
@@ -134,7 +132,8 @@
       return
 
     select_status.textContent = (files.reduce(add,0)/1000000000).toPrecision(3)+
-        'GB for ' + files.length + ' ' + ((files.length==1)&&'file'||'files');
+      'GB for ' + files.length + ' ' + ((files.length==1)&&'file'||'files');
+    btnSave.disabled = true;
     btnReset.disabled = false;
     btnProcess.disabled = false;
   }
@@ -142,6 +141,7 @@
   function resetEverything(evt) {
     files = [];
     select_status.textContent = 'No files selected.';
+    btnSave.disabled = true;
     btnReset.disabled = true;
     btnProcess.disabled = true;
     btnFileSelect.disabled = false;
@@ -162,7 +162,17 @@
     filesBegin() // mvg change
     ed2khasher.execute(files);
     btnFileSelect.disabled = true;
-    btnProcess.textContent = 'Stop';
+    btnSave.disabled = true;
+    btnProcess.textContent = 'Cancel';
+  }
+
+  function finishProcessingFiles() {
+    files = [];
+    select_status.textContent = 'No files selected.';
+    btnProcess.disabled = true
+    btnSave.disabled = false
+    nolongerprocess(false, false)
+    filesEnd() // mvg change
   }
 
   function nolongerprocess(kill_active, progressbar) {
@@ -196,8 +206,14 @@
   }
 
   btnFileSelectReal.addEventListener('change', handleFileSelect, false);
-  btnFileSelect.addEventListener('click', function() {btnFileSelectReal.click()}, false);
+  btnFileSelect.addEventListener('click', function() {
+    btnFileSelectReal.click()
+  }, false);
   btnReset.addEventListener('click', resetEverything, false);
   btnProcess.addEventListener('click', startProcessingFiles, false);
+  btnSave.addEventListener('click', function() {
+    resetEverything(null)
+    alert('saving is not currently implemented')
+  }, false);
   nolongerprocess(false, true)
 })()
