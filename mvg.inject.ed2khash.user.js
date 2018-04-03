@@ -49,9 +49,9 @@
   ]
   ourCode = ourCode.concat([
     '<div style="background-color:#eee;padding:0px;font-family:Tahoma,Geneva,sans-serif;text-align:left;resize:none;width:405px;height:170px">',
-    '<div style="background-color:#333;width:405px;height:75px;text-align:center">',
-    '<span style="color:red;font-weight:bold;font-size:0.7em;position:relative;top:5px">unofficial</span><br />',
-    '<span style="font-size:2em;color:white;position:relative;top:5px">MVGroup<span style="color:#55d300">Hasher</span></span>',
+    '<div style="background-color:#333;font-size:2em;color:white;width:405px;height:75px;text-align:center;line-height:75px">',
+    '<span style="color:red;padding-right:5px;font-weight:bold;font-size:0.4em;line-height:20px;float:right">unofficial</span>',
+    'MVGroup<span style="color:#55d300">Hasher</span>',
     '</div>',
     '<button id="__ed2kFileSelection" disabled="true" style="margin:0;width:33.3%;height:25px">Open</button>',
     '<button id="__ed2kProcess" disabled="true" style="margin:0;width:33.3%;height:25px">Process</button>',
