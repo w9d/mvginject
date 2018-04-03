@@ -141,6 +141,7 @@
   function resetEverything(evt) {
     files = [];
     select_status.textContent = 'No files selected.';
+    btnFileSelectReal.value = '' // stupid chrome bug
     btnSave.disabled = true;
     btnReset.disabled = true;
     btnProcess.disabled = true;
@@ -169,6 +170,7 @@
   function finishProcessingFiles() {
     files = [];
     select_status.textContent = 'No files selected.';
+    btnFileSelectReal.value = '' // stupid chrome bug
     btnProcess.disabled = true
     btnSave.disabled = false
     nolongerprocess(false, false)
