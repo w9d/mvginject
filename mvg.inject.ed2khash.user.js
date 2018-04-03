@@ -50,15 +50,15 @@
     return new Worker(workerURL)
   }
 
-  var ourCode = ['<style>input[type="file"]{height:25px;}',
-    'input[type="file"]::-webkit-file-upload-button{height:25px;} </style>',
-    '<div style="background-color: #eee;padding:0px;text-align:left;resize:none;width:405px;height:170px">',
-    '<div style="background-color: #333; width:405px; height:75px">',
-    '<div style="vertical-align:middle;font-family:Tahoma,Geneva,sans-serif;color:red">unofficial<span style="font-size:30px;color:white">MVGroup Hasher</span>',
-    '</div></div>',
-    '<input type="file" id="__ed2kFileSelection" disabled="true" accept=".mkv, .mp4, .avi" style="width:33%;color:transparent" multiple />',
-    '<button id="__ed2kReset" name="reset_files" disabled="true" style="width:33%;height:25px">Reset</button>',
-    '<button id="__ed2kProcess" name="process_files" disabled="true" style="width:33%;height:25px">Process</button><br />',
+  var ourCode = ['',
+    '<div style="background-color:#eee;padding:0px;font-family:Tahoma,Geneva,sans-serif;text-align:left;resize:none;width:405px;height:170px">',
+    '<div style="background-color:#333;width:405px;height:75px;text-align:center">',
+    '<span style="color:red;font-weight:bold;font-size:0.7em;position:relative;top:5px">unofficial</span><br /><span style="font-size:2em;color:white;position:relative;top:5px">MVGroup<span style="color:#55d300">Hasher</span></span>',
+    '</div>',
+    '<input type="file" id="__ed2kFileSelectionReal" accept=".mkv, .mp4, .avi" style="display:none" multiple />',
+    '<button id="__ed2kFileSelection" disabled="true" style="width:32%;height:25px">Open</button>',
+    '<button id="__ed2kReset" disabled="true" style="width:33%;height:25px">Reset</button>',
+    '<button id="__ed2kProcess" disabled="true" style="width:33%;height:25px">Process</button><br />',
     '<div id="__ed2kFileStatus" style="padding-left:2px">Script has not executed.</div><br />',
     '<progress id="__ed2kProgressFile" style="width:100%"></progress><br />',
     '<progress id="__ed2kProgressFiles" style="width:100%"></progress>',
@@ -72,6 +72,7 @@
   //var ed2k_text = document.getElementById('filehashes'); // mvg change
   var btnReset = document.getElementById('__ed2kReset');
   var btnProcess = document.getElementById('__ed2kProcess');
+  var btnFileSelectReal = document.getElementById('__ed2kFileSelectionReal');
   var btnFileSelect = document.getElementById('__ed2kFileSelection');
   var select_status = document.getElementById('__ed2kFileStatus');
   var select_pfile = document.getElementById('__ed2kProgressFile');
@@ -161,7 +162,8 @@
     }
   }
 
-  btnFileSelect.addEventListener('change', handleFileSelect, false);
+  btnFileSelectReal.addEventListener('change', handleFileSelect, false);
+  btnFileSelect.addEventListener('click', function() {btnFileSelectReal.click()}, false);
   btnReset.addEventListener('click', resetEverything, false);
   btnProcess.addEventListener('click', startProcessingFiles, false);
   btnFileSelect.disabled = false;
