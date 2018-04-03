@@ -166,6 +166,13 @@
     return new Worker(workerURL)
   }
 
+  function mvglog (message, error) {
+    if (error)
+      console.error('mvg-inject: ' + message)
+    else
+      console.log('mvg-inject: ' + message)
+  }
+
   btnFileSelectReal.addEventListener('change', handleFileSelect, false);
   btnFileSelect.addEventListener('click', function() {btnFileSelectReal.click()}, false);
   btnReset.addEventListener('click', resetEverything, false);
