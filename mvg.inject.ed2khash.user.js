@@ -17,17 +17,21 @@
 (function () {
   'use strict';
 
+  var applet = document.getElementById('theApplet')
+  if (!applet) {
+    console.log('mvg-inject: theApplet doesn\'t exist! are we running on the correct page?')
+    return
+  }
+
   var applet_shas = [
     '1af653111df5dde8bfed0f1da6c677232970aa1342fa956b353799962a07a33b',/*docuwiki/postbot*/
     '37139811907c2425441b20340bf8d982bc2784aa9c6739f73ae848cca79b096f' /*mvg/releasedb*/
   ]
-  var applet = document.getElementById('theApplet')
   var applet_sha = sha256(applet.innerHTML)
   var failstr = ''
 
   if (typeof ed2khash !== 'function')
     failstr += 'mvg-inject: we wanted to inject but we\'re missing ed2khash\n'
-
   if (applet_shas.indexOf(applet_sha) === -1)
     failstr += 'mvg-inject: we wanted to inject but the target element has changed\n'
 
