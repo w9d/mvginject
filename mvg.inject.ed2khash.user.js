@@ -17,6 +17,7 @@
 (function () {
   'use strict';
 
+  var onlysinglefile = (window.location.hostname === 'forums.mvgroup.org')
   var applet = document.getElementById('theApplet')
   if (!applet) {
     console.log('mvg-inject: theApplet doesn\'t exist! are we running on the correct page?')
@@ -41,22 +42,33 @@
     return
   }
 
-  var ourCode = ['',
+  var ourCode = [
+    '<input type="file" id="__ed2kFileSelectionReal" ',
+    'accept=".mkv, .mp4, .avi" style="display:none" ',
+    (onlysinglefile || 'multiple ') + '/>'
+  ]
+  ourCode = ourCode.concat([
     '<div style="background-color:#eee;padding:0px;font-family:Tahoma,Geneva,sans-serif;text-align:left;resize:none;width:405px;height:170px">',
     '<div style="background-color:#333;width:405px;height:75px;text-align:center">',
-    '<span style="color:red;font-weight:bold;font-size:0.7em;position:relative;top:5px">unofficial</span><br /><span style="font-size:2em;color:white;position:relative;top:5px">MVGroup<span style="color:#55d300">Hasher</span></span>',
+    '<span style="color:red;font-weight:bold;font-size:0.7em;position:relative;top:5px">unofficial</span><br />',
+    '<span style="font-size:2em;color:white;position:relative;top:5px">MVGroup<span style="color:#55d300">Hasher</span></span>',
     '</div>',
-    '<input type="file" id="__ed2kFileSelectionReal" accept=".mkv, .mp4, .avi" style="display:none" multiple />',
     '<button id="__ed2kFileSelection" disabled="true" style="width:32%;height:25px">Open</button>',
     '<button id="__ed2kReset" disabled="true" style="width:33%;height:25px">Reset</button>',
     '<button id="__ed2kProcess" disabled="true" style="width:33%;height:25px">Process</button><br />',
     '<div id="__ed2kFileStatus" style="padding-left:2px">Script has not executed.</div><br />',
     '<progress id="__ed2kProgressFile" style="width:100%"></progress><br />',
     '<progress id="__ed2kProgressFiles" style="width:100%"></progress>',
-    '</div>',
-    '<textarea readOnly="readOnly" id="filehashes" name="filehashes" cols="100"',
-   'rows="5" style="width:100%;"></textarea>'].join('')
-  applet.innerHTML = ourCode
+    '</div>'
+  ])
+  if (!onlysinglefile) {
+    // currently docuwiki needs this element adding, releasedb already has it
+    ourCode = ourCode.concat(['<textarea readOnly="readOnly" id="filehashes" ',
+        'name="filehashes" cols="100" rows="5" style="width:100%;"></textarea>'
+    ])
+  }
+
+  applet.innerHTML = ourCode.join('')
   console.log('mvg-inject: we\'ve injected our HTML successfully!')
 
   var files = [];
@@ -94,6 +106,9 @@
     var _files = evt.target.files;
     var add = function(a,b){return a+b.size};
 
+    if (onlysinglefile)
+      files = []
+
     for (var i = 0, f; f = _files[i]; i++) {
       if (!f.name.match('\.(mkv|mp4|avi)$')) {
         window.alert('We only accept the MP4, MKV and AVI multimedia containers.' +
@@ -115,8 +130,7 @@
   function resetEverything(evt) {
     files = [];
     //ed2k_text.value = ''; // mvg change
-    select_status.textContent = '';
-    btnFileSelect.value = '';
+    select_status.textContent = 'No files selected.';
     btnReset.disabled = true;
     btnProcess.disabled = true;
     btnFileSelect.disabled = false;
