@@ -72,7 +72,6 @@
   console.log('mvg-inject: we\'ve injected our HTML successfully!')
 
   var files = [];
-  //var ed2k_text = document.getElementById('filehashes'); // mvg change
   var btnReset = document.getElementById('__ed2kReset');
   var btnProcess = document.getElementById('__ed2kProcess');
   var btnFileSelectReal = document.getElementById('__ed2kFileSelectionReal');
@@ -81,13 +80,11 @@
   var select_pfile = document.getElementById('__ed2kProgressFile');
   var select_pfiles = document.getElementById('__ed2kProgressFiles');
 
-  // bulk of unmodified example code
   var ed2k_progress = function (_file, _current_file, _total_files) {
     select_pfile.value = _current_file;
     select_pfiles.value = _total_files;
   }
   var ed2k_file_done = function (f, sum) {
-    // mvg changes
     //ed2k_text.value += f.name + '\t' + f.size + '\t' + sum.mpc + '\t' + sum.ed2k + '\n';
     var hashes = [sum.mpc, sum.ed2k]
     fileHashed(f.name, f.size, hashes)
@@ -144,7 +141,6 @@
 
   function resetEverything(evt) {
     files = [];
-    //ed2k_text.value = ''; // mvg change
     select_status.textContent = 'No files selected.';
     btnReset.disabled = true;
     btnProcess.disabled = true;
@@ -165,7 +161,6 @@
 
     filesBegin() // mvg change
     ed2khasher.execute(files);
-    //ed2k_text.value = ''; // mvg change
     btnFileSelect.disabled = true;
     btnProcess.textContent = 'Stop';
   }
@@ -204,6 +199,5 @@
   btnFileSelect.addEventListener('click', function() {btnFileSelectReal.click()}, false);
   btnReset.addEventListener('click', resetEverything, false);
   btnProcess.addEventListener('click', startProcessingFiles, false);
-  btnFileSelect.disabled = false;
-  select_status.textContent = 'No files selected.';
+  nolongerprocess(false, true)
 })()
