@@ -39,17 +39,6 @@
     return
   }
 
-  function getWorker () {
-    function resourceToBlobUrl(resourceName) {
-      var blob = new Blob([GM_getResourceText(resourceName)], {
-        type: 'text/javascript'
-      });
-      return window.URL.createObjectURL(blob)
-    }
-    var workerURL = resourceToBlobUrl('worker')
-    return new Worker(workerURL)
-  }
-
   var ourCode = ['',
     '<div style="background-color:#eee;padding:0px;font-family:Tahoma,Geneva,sans-serif;text-align:left;resize:none;width:405px;height:170px">',
     '<div style="background-color:#333;width:405px;height:75px;text-align:center">',
@@ -160,6 +149,17 @@
       select_pfiles.value = 0;
       select_status.textContent = 'No files selected.';
     }
+  }
+
+  function getWorker () {
+    function resourceToBlobUrl(resourceName) {
+      var blob = new Blob([GM_getResourceText(resourceName)], {
+        type: 'text/javascript'
+      });
+      return window.URL.createObjectURL(blob)
+    }
+    var workerURL = resourceToBlobUrl('worker')
+    return new Worker(workerURL)
   }
 
   btnFileSelectReal.addEventListener('change', handleFileSelect, false);
