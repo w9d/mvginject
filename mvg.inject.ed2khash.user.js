@@ -3,7 +3,6 @@
 // @description Inject ed2khash interface over Java Applet.
 // @namespace mvg.inject.ed2khash
 // @version 4
-// @match *://localhost:8000/*
 // @match *://docuwiki.net/postbot/
 // @match *://forums.mvgroup.org/releasedb/
 // @grant GM_getResourceText
@@ -12,6 +11,7 @@
 // @downloadURL https://raw.githubusercontent.com/w9d/mvginject/master/mvg.inject.ed2khash.user.js
 // @resource worker https://raw.githubusercontent.com/w9d/ed2khash/833e80c484833982517b4c7b1f0e77ceeb677e96/build/md4-worker.min.js#sha256=d0330e838f487c4338d1b114f78e58045c36cbac0d1bfff6fa601e35be44eaee
 // @require https://raw.githubusercontent.com/w9d/ed2khash/833e80c484833982517b4c7b1f0e77ceeb677e96/build/ed2khash.min.js#sha256=6e1230f73f04112d50a4082744a84ccc725e89ad8ea7c93673461852180ca353
+// @require https://raw.githubusercontent.com/w9d/FileSaver.js/5ed507ef8aa53d8ecfea96d96bc7214cd2476fd2/FileSaver.min.js#sha256=14f249b7c9c0fb12f8454ebf82cae203ca7cc4078b19ab68c938e576f40a19d1
 // ==/UserScript==
 
 (function () {
@@ -42,7 +42,7 @@
     '</div>',
     '<button id="__ed2kFileSelection" disabled="true" style="margin:0;width:33.3%;height:25px">Open</button>',
     '<button id="__ed2kProcess" disabled="true" style="margin:0;width:33.3%;height:25px">Process</button>',
-    '<button id="__ed2kSave" disabled="true" style="margin:0;width:33.3%;height:25px">Save (soon)</button>',
+    '<button id="__ed2kSave" disabled="true" style="margin:0;width:33.3%;height:25px">Save</button>',
     '<button id="__ed2kReset" disabled="true" style="margin:0;width:33.3%;height:25px;float:right">Reset</button>',
     '<div id="__ed2kFileStatus" style="padding:5px;clear:left">Script has not executed.</div>',
     '<progress id="__ed2kProgressFile" style="width:100%"></progress><br />',
@@ -60,6 +60,7 @@
   mvglog('we\'ve injected our HTML successfully!', false)
 
   var files = [];
+  var old_processed = [];
   var btnReset = document.getElementById('__ed2kReset');
   var btnSave = document.getElementById('__ed2kSave');
   var btnProcess = document.getElementById('__ed2kProcess');
@@ -74,7 +75,7 @@
     select_pfiles.value = _total_files;
   }
   var ed2k_file_done = function (f, sum) {
-    //ed2k_text.value += f.name + '\t' + f.size + '\t' + sum.mpc + '\t' + sum.ed2k + '\n';
+    old_processed.push([ f.name, f.size, sum.mpc, sum.ed2k ])
     var hashes = [sum.mpc, sum.ed2k]
     fileHashed(f.name, f.size, hashes)
   }
@@ -99,6 +100,7 @@
       return false
     }
 
+    old_processed = []
     if (onlysinglefile)
       files = []
 
@@ -142,6 +144,7 @@
   }
 
   function resetEverything(evt) {
+    old_processed = [];
     files = [];
     btnSave.disabled = true;
     btnReset.disabled = true;
@@ -175,6 +178,16 @@
     btnSave.disabled = false
     nolongerprocess(false, false)
     filesEnd() // mvg change
+  }
+
+  function handleSave() {
+    var str = ''
+    for (var i = 0, p; p = old_processed[i]; i++) {
+      str += p.join('\t') + '\r\n'
+    }
+    var blob = new Blob([str], { type: 'text/plain;charset=utf-8' })
+    saveAs(blob, 'mvghashes.txt', true)
+    resetEverything(null)
   }
 
   function nolongerprocess(kill_active, progressbar) {
@@ -214,9 +227,6 @@
   }, false);
   btnReset.addEventListener('click', resetEverything, false);
   btnProcess.addEventListener('click', startProcessingFiles, false);
-  btnSave.addEventListener('click', function() {
-    resetEverything(null)
-    alert('saving is not currently implemented')
-  }, false);
+  btnSave.addEventListener('click', handleSave, false);
   nolongerprocess(false, true)
 })()
