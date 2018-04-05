@@ -20,7 +20,7 @@
   var onlysinglefile = (window.location.hostname === 'forums.mvgroup.org')
   var applet = document.getElementById('theApplet')
   if (!applet) {
-    console.log('mvg-inject: theApplet doesn\'t exist! are we running on the correct page?')
+    mvglog('theApplet doesn\'t exist! are we running on the correct page?', true)
     return
   }
 
@@ -57,7 +57,7 @@
   }
 
   applet.innerHTML = ourCode.join('')
-  console.log('mvg-inject: we\'ve injected our HTML successfully!')
+  mvglog('we\'ve injected our HTML successfully!', false)
 
   var files = [];
   var btnReset = document.getElementById('__ed2kReset');
@@ -141,7 +141,7 @@
     }
 
     if (!(files[0])) {
-      console.log('process_files: no file to process, this should never happen');
+      mvglog('no file to process, this should never happen', false);
       return;
     }
 
