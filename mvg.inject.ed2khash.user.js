@@ -87,6 +87,7 @@
 
   function handleFileSelect(evt) {
     var new_files = evt.target.files;
+    var badfile_type = [], badfile_dup = [];
     var add = function(a, b) { return a + b.size };
     var dupfile = function(input_file, arr) {
       var input_name = input_file.name;
@@ -103,16 +104,30 @@
 
     for (var i = 0, f; f = new_files[i]; i++) {
       if (!f.name.match('\.(mkv|mp4|avi)$')) {
-        window.alert('We only accept the MP4, MKV and AVI multimedia containers.' +
-          '\n\nYour selection "' + f.name + '" was ignored.');
+        badfile_type.push(f.name)
         continue;
       }
       if (dupfile(f, files)) {
-        window.alert('Err... you cannot insert the same file multiple times.' +
-          '\n\nRemoved "' + f.name + '"');
+        badfile_dup.push(f.name)
         continue;
       }
       files.push(f);
+    }
+
+    if (badfile_type.length !== 0 || badfile_dup.length !== 0) {
+      var str = ''
+      if (badfile_type.length !== 0) {
+        str += 'We only accept the MP4, MKV and AVI multimedia containers. ' +
+          'The following files were ignored:\n\n'
+        str += badfile_type.join('\n')
+      }
+      if (badfile_dup.length !== 0) {
+        str += (badfile_type.length !== 0 ? '\n\n' : '')
+        str += 'You cannot insert the same file multiple times. ' +
+          'The following files were ignored:\n\n'
+        str += badfile_dup.join('\n')
+      }
+      window.alert(str)
     }
 
     btnFileSelectReal.value = ''; // stupid chrome behaviour
