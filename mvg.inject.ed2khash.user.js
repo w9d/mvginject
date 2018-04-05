@@ -154,7 +154,8 @@
 
   function finishProcessingFiles() {
     files = [];
-    select_status.textContent = 'No files selected.';
+    select_status.textContent = 'No file' + (onlysinglefile ? '' : 's') +
+      ' selected.';
     btnFileSelectReal.value = '' // stupid chrome bug
     btnProcess.disabled = true
     btnSave.disabled = false
@@ -170,7 +171,8 @@
     if (progressbar) {
       select_pfile.value = 0;
       select_pfiles.value = 0;
-      select_status.textContent = 'No files selected.';
+      select_status.textContent = 'No file' + (onlysinglefile ? '' : 's') +
+        ' selected.';
     }
   }
 
