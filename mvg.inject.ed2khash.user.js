@@ -115,6 +115,7 @@
       files.push(f);
     }
 
+    btnFileSelectReal.value = ''; // stupid chrome behaviour
     if (files.length === 0)
       return
 
@@ -127,7 +128,6 @@
 
   function resetEverything(evt) {
     files = [];
-    btnFileSelectReal.value = '' // stupid chrome bug
     btnSave.disabled = true;
     btnReset.disabled = true;
     btnProcess.disabled = true;
@@ -156,7 +156,6 @@
     files = [];
     select_status.textContent = 'No file' + (onlysinglefile ? '' : 's') +
       ' selected.';
-    btnFileSelectReal.value = '' // stupid chrome bug
     btnProcess.disabled = true
     btnSave.disabled = false
     nolongerprocess(false, false)
