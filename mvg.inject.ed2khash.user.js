@@ -3,6 +3,7 @@
 // @description Inject ed2khash interface over Java Applet.
 // @namespace mvg.inject.ed2khash
 // @version 4
+// @match *://localhost:8000/*
 // @match *://docuwiki.net/postbot/
 // @match *://forums.mvgroup.org/releasedb/
 // @grant GM_getResourceText
@@ -126,12 +127,10 @@
 
   function resetEverything(evt) {
     files = [];
-    select_status.textContent = 'No files selected.';
     btnFileSelectReal.value = '' // stupid chrome bug
     btnSave.disabled = true;
     btnReset.disabled = true;
     btnProcess.disabled = true;
-    btnFileSelect.disabled = false;
     nolongerprocess(true, true);
   }
 
