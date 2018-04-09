@@ -136,8 +136,8 @@
     if (files.length === 0)
       return
 
-    select_status.textContent = (files.reduce(add,0)/1000000000).toPrecision(3)+
-      'GB for ' + files.length + ' ' + ((files.length==1)&&'file'||'files');
+    select_status.textContent = prettybytes(files.reduce(add, 0)) +
+      ' for ' + files.length + ' ' + ((files.length==1) && 'file' || 'files');
     btnSave.disabled = true;
     btnReset.disabled = false;
     btnProcess.disabled = false;
@@ -201,6 +201,13 @@
       select_status.textContent = 'No file' + (onlysinglefile ? '' : 's') +
         ' selected.';
     }
+  }
+
+  function prettybytes(val) {
+    if (val < 1) return '0.00 bytes'
+    var selector = Math.floor(Math.log2(val)/10)
+    return (val / Math.pow(1024, selector)).toFixed(2) + ' ' +
+      ['bytes','KiB','MiB','GiB','TiB','PiB','EiB','ZiB','YiB'][selector]
   }
 
   function getWorker () {
