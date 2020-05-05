@@ -2,7 +2,7 @@
 // @name Unofficial MVGroup HTML5 eD2k hasher injector
 // @description Inject ed2khash interface over Java Applet.
 // @namespace mvg.inject.ed2khash
-// @version 7
+// @version 20200505.1
 // @match *://docuwiki.net/postbot/
 // @match *://forums.mvgroup.org/releasedb/
 // @grant GM_getResourceText
@@ -17,8 +17,8 @@
 (function () {
   'use strict';
 
-  var onlysinglefile = (window.location.hostname === 'forums.mvgroup.org')
-  var applet = document.getElementById('theApplet')
+  const onlysinglefile = (window.location.hostname === 'forums.mvgroup.org')
+  const applet = document.getElementById('theApplet')
   if (!applet) {
     mvglog('theApplet doesn\'t exist! are we running on the correct page?', true)
     return
@@ -29,7 +29,7 @@
     return
   }
 
-  var ourCode = [
+  let ourCode = [
     '<input type="file" id="__ed2kFileSelectionReal" ',
     'accept=".mkv, .mp4, .avi" style="display:none" ',
     (onlysinglefile || 'multiple ') + '/>'
@@ -37,8 +37,10 @@
   ourCode = ourCode.concat([
     '<div style="background-color:#eee;padding:0px;font-family:Tahoma,Geneva,sans-serif;text-align:left;resize:none;width:405px;height:170px">',
     '<div style="background-color:#333;font-size:2em;color:white;width:405px;height:75px;text-align:center;line-height:75px">',
-    '<span style="color:red;padding-right:5px;font-weight:bold;font-size:0.4em;line-height:20px;float:right">unofficial</span>',
-    'MVGroup<span style="color:#55d300">Hasher</span>',
+    '<div style="color:red;padding-right:5px;font-weight:bold;font-size:0.4em;line-height:20px;position:relative;top:0px;text-align:right">unofficial</div>',
+    '<span style="position:relative;top:-20px">MVGroup<span style="color:#55d300">Hasher</span></span>',
+    '<div style="color:#fff;padding-right:5px;font-weight:bold;font-size:0.4em;line-height:20px;position:relative;bottom:42px;text-align:right">',
+    '<label for="__ed2k_MPC_disable" style="vertical-align:middle">disable mpc calculation (for current postbotbeta)<input type="checkbox" id="__ed2k_MPC_disable" style="vertical-align:middle" checked /></label></div>',
     '</div>',
     '<button id="__ed2kFileSelection" disabled="true" style="margin:0;width:33.3%;height:25px">Open</button>',
     '<button id="__ed2kProcess" disabled="true" style="margin:0;width:33.3%;height:25px">Process</button>',
@@ -47,7 +49,8 @@
     '<div id="__ed2kFileStatus" style="padding:5px;clear:left">Script has not executed.</div>',
     '<progress id="__ed2kProgressFile" style="width:100%"></progress><br />',
     '<progress id="__ed2kProgressFiles" style="width:100%"></progress>',
-    '</div>'
+    '</div>',
+    '<pre id="progress"></pre>'
   ])
   if (!onlysinglefile) {
     // currently docuwiki needs this element adding, releasedb already has it
@@ -59,27 +62,34 @@
   applet.innerHTML = ourCode.join('')
   mvglog('we\'ve injected our HTML successfully!', false)
 
-  var files = [];
-  var old_processed = [];
-  var btnReset = document.getElementById('__ed2kReset');
-  var btnSave = document.getElementById('__ed2kSave');
-  var btnProcess = document.getElementById('__ed2kProcess');
-  var btnFileSelectReal = document.getElementById('__ed2kFileSelectionReal');
-  var btnFileSelect = document.getElementById('__ed2kFileSelection');
-  var select_status = document.getElementById('__ed2kFileStatus');
-  var select_pfile = document.getElementById('__ed2kProgressFile');
-  var select_pfiles = document.getElementById('__ed2kProgressFiles');
+  let files = [];
+  let old_processed = [];
+  let mpc_disable = true;
+  const btnReset = document.getElementById('__ed2kReset');
+  const btnSave = document.getElementById('__ed2kSave');
+  const btnProcess = document.getElementById('__ed2kProcess');
+  const btnFileSelectReal = document.getElementById('__ed2kFileSelectionReal');
+  const btnFileSelect = document.getElementById('__ed2kFileSelection');
+  const select_status = document.getElementById('__ed2kFileStatus');
+  const select_pfile = document.getElementById('__ed2kProgressFile');
+  const select_pfiles = document.getElementById('__ed2kProgressFiles');
+  const chk_mpc_disable = document.getElementById('__ed2k_MPC_disable');
+  chk_mpc_disable.addEventListener('change', function() {
+    mpc_disable = chk_mpc_disable.checked && true;
+  });
+  mpc_disable = chk_mpc_disable.checked && true;
 
-  var ed2k_progress = function (_file, _current_file, _total_files) {
+  const ed2k_progress = function (_file, _current_file, _total_files) {
     select_pfile.value = _current_file;
     select_pfiles.value = _total_files;
   }
-  var ed2k_file_done = function (f, sum) {
+  const ed2k_file_done = function (f, sum) {
     old_processed.push([ f.name, f.size, sum.mpc, sum.ed2k ])
-    var hashes = [sum.mpc, sum.ed2k]
+    let mpc_sum = !mpc_disable ? sum.mpc : 'abcdef0987654321'
+    let hashes = [mpc_sum, sum.ed2k]
     fileHashed(f.name, f.size, hashes)
   }
-  var ed2khasher = ed2khash();
+  const ed2khasher = ed2khash();
   ed2khasher.onprogress = ed2k_progress;
   ed2khasher.onfilecomplete = ed2k_file_done;
   ed2khasher.onallcomplete = finishProcessingFiles;
