@@ -2,7 +2,7 @@
 // @name Unofficial MVGroup HTML5 eD2k hasher injector
 // @description Inject ed2khash interface over Java Applet.
 // @namespace mvg.inject.ed2khash
-// @version 20200505.1
+// @version 20200918.1
 // @match *://docuwiki.net/postbot/
 // @match *://forums.mvgroup.org/releasedb/
 // @grant GM_getResourceText
@@ -31,7 +31,7 @@
 
   let ourCode = [
     '<input type="file" id="__ed2kFileSelectionReal" ',
-    'accept=".mkv, .mp4, .avi" style="display:none" ',
+    'accept=".mkv, .mp4, .avi, .ts" style="display:none" ',
     (onlysinglefile || 'multiple ') + '/>'
   ]
   ourCode = ourCode.concat([
@@ -84,8 +84,8 @@
     select_pfiles.value = _total_files;
   }
   const ed2k_file_done = function (f, sum) {
-    old_processed.push([ f.name, f.size, sum.mpc, sum.ed2k ])
     let mpc_sum = !mpc_disable ? sum.mpc : 'abcdef0987654321'
+    old_processed.push([ f.name, f.size, mpc_sum, sum.ed2k ])
     let hashes = [mpc_sum, sum.ed2k]
     fileHashed(f.name, f.size, hashes)
   }
@@ -115,7 +115,7 @@
       files = []
 
     for (var i = 0, f; f = new_files[i]; i++) {
-      if (!f.name.match('\.(mkv|mp4|avi)$')) {
+      if (!f.name.match('\.(mkv|mp4|avi|ts)$')) {
         badfile_type.push(f.name)
         continue;
       }
@@ -129,7 +129,7 @@
     if (badfile_type.length !== 0 || badfile_dup.length !== 0) {
       var str = ''
       if (badfile_type.length !== 0) {
-        str += 'We only accept the MP4, MKV and AVI multimedia containers. ' +
+        str += 'We only accept the MP4, MKV, AVI and TS (mpegts) multimedia containers. ' +
           'The following files were ignored:\n\n'
         str += badfile_type.join('\n')
       }
