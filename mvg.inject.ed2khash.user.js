@@ -2,15 +2,16 @@
 // @name Unofficial MVGroup HTML5 eD2k hasher injector
 // @description Inject ed2khash interface over Java Applet.
 // @namespace mvg.inject.ed2khash
-// @version 20200918.1
+// @version 20201126.0
 // @match *://docuwiki.net/postbot/
+// @match *://docuwiki.net/postbotbeta/
 // @match *://forums.mvgroup.org/releasedb/
 // @grant GM_getResourceText
 // @homepageURL https://github.com/w9d/mvginject
-// @updateURL https://raw.githubusercontent.com/w9d/mvginject/master/mvg.inject.ed2khash.meta.js
-// @downloadURL https://raw.githubusercontent.com/w9d/mvginject/master/mvg.inject.ed2khash.user.js
-// @resource worker https://raw.githubusercontent.com/w9d/ed2khash/48d26e447c5cfbcb9c13863201653ef27b57f6a3/build/md4-worker.min.js#sha256=0b50b862f531dd7e65835e01bd1a54b8a8671d0fb83092b3dcbc8ae92389a657
-// @require https://raw.githubusercontent.com/w9d/ed2khash/48d26e447c5cfbcb9c13863201653ef27b57f6a3/build/ed2khash.min.js#sha256=8391e52030df2aad325fa6c67b779154f38b3ab3f1217c6fdd77cbbccb001af5
+// @updateURL https://raw.githubusercontent.com/w9d/mvginject/beta/mvg.inject.ed2khash.meta.js
+// @downloadURL https://raw.githubusercontent.com/w9d/mvginject/beta/mvg.inject.ed2khash.user.js
+// @resource worker https://raw.githubusercontent.com/w9d/ed2khash/c006035d2ad4c5742a09f115ad0c483114970251/build/md4-worker.min.js#sha256=19995c6e7e9a231e96326bf09db243784835d497f7bc25c313b50197dcbe6af6
+// @require https://raw.githubusercontent.com/w9d/ed2khash/c006035d2ad4c5742a09f115ad0c483114970251/build/ed2khash.min.js#sha256=f6b7bc82d8088e58de8e3eaf262d23ff3b9d88c67bbd98629cd37ac15696be84
 // @require https://raw.githubusercontent.com/w9d/FileSaver.js/5ed507ef8aa53d8ecfea96d96bc7214cd2476fd2/FileSaver.min.js#sha256=14f249b7c9c0fb12f8454ebf82cae203ca7cc4078b19ab68c938e576f40a19d1
 // ==/UserScript==
 
@@ -35,12 +36,14 @@
     (onlysinglefile || 'multiple ') + '/>'
   ]
   ourCode = ourCode.concat([
+    '<input type="file" id="__ed2kFileSelectionReal_torrent" accept=".torrent" style="display:none" />',
     '<div style="background-color:#eee;padding:0px;font-family:Tahoma,Geneva,sans-serif;text-align:left;resize:none;width:405px;height:170px">',
     '<div style="background-color:#333;font-size:2em;color:white;width:405px;height:75px;text-align:center;line-height:75px">',
     '<div style="color:red;padding-right:5px;font-weight:bold;font-size:0.4em;line-height:20px;position:relative;top:0px;text-align:right">unofficial</div>',
     '<span style="position:relative;top:-20px">MVGroup<span style="color:#55d300">Hasher</span></span>',
     '<div style="color:#fff;padding-right:5px;font-weight:bold;font-size:0.4em;line-height:20px;position:relative;bottom:42px;text-align:right">',
-    '<label for="__ed2k_MPC_disable" style="vertical-align:middle">disable mpc calculation (for current postbotbeta)<input type="checkbox" id="__ed2k_MPC_disable" style="vertical-align:middle" checked /></label></div>',
+    '<label for="__ed2k_MPC_disable" style="vertical-align:middle">disable mpc calculation<input type="checkbox" id="__ed2k_MPC_disable" style="vertical-align:middle" checked /></label>',
+    '<label for="__ed2k_bittorrent_flag" style="vertical-align:middle">bittorrent (BEWARE)<input type="checkbox" id="__ed2k_bittorrent_flag" style="vertical-align:middle" /></label></div>',
     '</div>',
     '<button id="__ed2kFileSelection" disabled="true" style="margin:0;width:33.3%;height:25px">Open</button>',
     '<button id="__ed2kProcess" disabled="true" style="margin:0;width:33.3%;height:25px">Process</button>',
@@ -65,10 +68,12 @@
   let files = [];
   let old_processed = [];
   let mpc_disable = true;
+  let bittorrent_flag = false;
   const btnReset = document.getElementById('__ed2kReset');
   const btnSave = document.getElementById('__ed2kSave');
   const btnProcess = document.getElementById('__ed2kProcess');
   const btnFileSelectReal = document.getElementById('__ed2kFileSelectionReal');
+  const btnFileSelectReal_torrent = document.getElementById('__ed2kFileSelectionReal_torrent');
   const btnFileSelect = document.getElementById('__ed2kFileSelection');
   const select_status = document.getElementById('__ed2kFileStatus');
   const select_pfile = document.getElementById('__ed2kProgressFile');
@@ -78,6 +83,8 @@
     mpc_disable = chk_mpc_disable.checked && true;
   });
   mpc_disable = chk_mpc_disable.checked && true;
+  const chk_bittorrent_flag = document.getElementById('__ed2k_bittorrent_flag');
+  bittorrent_flag = chk_bittorrent_flag.checked && true;
 
   const ed2k_progress = function (_file, _current_file, _total_files) {
     select_pfile.value = _current_file;
@@ -95,6 +102,11 @@
   ed2khasher.onallcomplete = finishProcessingFiles;
   ed2khasher.onerror = function (e) { window.alert('ed2khash error: ' + e.message) }
   ed2khasher.setworker(getWorker())
+  chk_bittorrent_flag.addEventListener('change', function() {
+    bittorrent_flag = chk_bittorrent_flag.checked && true;
+    ed2khasher.set_bittorrent_quirk(bittorrent_flag);
+    resetEverything(null);
+  });
 
   function handleFileSelect(evt) {
     var new_files = evt.target.files;
@@ -151,6 +163,21 @@
     btnSave.disabled = true;
     btnReset.disabled = false;
     btnProcess.disabled = false;
+  }
+
+  function handleFileSelect_torrent(evt) {
+    const new_files = evt.target.files;
+    if (new_files.length !== 1) {
+      mvglog('files len not one?!', true);
+      return;
+    }
+    files = [];
+    files.push(new_files[0]);
+    startProcessingFiles(false);
+    select_status.textContent = 'hopefully one torrent selected';
+    btnSave.disabled = true;
+    btnReset.disabled = false;
+    btnProcess.disabled = true;
   }
 
   function resetEverything(evt) {
@@ -239,8 +266,12 @@
   }
 
   btnFileSelectReal.addEventListener('change', handleFileSelect, false);
+  btnFileSelectReal_torrent.addEventListener('change', handleFileSelect_torrent, false);
   btnFileSelect.addEventListener('click', function() {
-    btnFileSelectReal.click()
+    if (!bittorrent_flag)
+      btnFileSelectReal.click()
+    else
+      btnFileSelectReal_torrent.click()
   }, false);
   btnReset.addEventListener('click', resetEverything, false);
   btnProcess.addEventListener('click', startProcessingFiles, false);
